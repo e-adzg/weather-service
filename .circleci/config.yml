@@ -1,4 +1,5 @@
 version: 2.1
+
 jobs:
   build-and-test:
     docker:
@@ -9,8 +10,33 @@ jobs:
       - store_test_results:
           path: build/test-results/test/
 
+  publish-docker-image:
+    docker:
+      - image: circleci/openjdk:17-jdk-buster
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build Docker Image
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker build -t erikasmu/weather-service:latest .
+      - run:
+          name: Publish Docker Image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              docker push erikasmu/weather-service:latest
+            fi
+
 workflows:
   version: 2
-  build-test-workflow:
+  build-and-deploy:
     jobs:
       - build-and-test
+      - publish-docker-image:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
