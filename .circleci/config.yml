@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/openjdk:17-jdk
+    steps:
+      - checkout
+      - run: ./gradlew test
+
+workflows:
+  version: 2
+  build-test-workflow:
+    jobs:
+      - build-and-test
