@@ -26,15 +26,10 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build Docker Image
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker build -t erikasmu/weather-service:latest .
-      - run:
-          name: Publish Docker Image
+          name: Build and Push Docker Image with Jib
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              docker push erikasmu/weather-service:latest
+              ./gradlew jib -Djib.to.image=erikasmu/weather-service:latest -Djib.to.auth.username=$DOCKERHUB_USERNAME -Djib.to.auth.password=$DOCKERHUB_PASS
             fi
 
 workflows:
