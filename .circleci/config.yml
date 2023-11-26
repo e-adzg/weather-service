@@ -6,7 +6,15 @@ jobs:
       - image: circleci/openjdk:17-jdk-buster
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-dependencies-
       - run: ./gradlew test
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results/test/
 
