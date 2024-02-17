@@ -17,7 +17,7 @@ To run the application in Docker:
    docker run -p 8080:8080 erikasmu/weather-service:latest
    ```
 
-3. Access the application at: [http://localhost:8080](http://localhost:8080)
+3. Access the application at: [http://localhost:8080/weather?city=Dublin](http://localhost:8080/weather?city=Dublin)
 
 ### Running the Image with Kind
 
