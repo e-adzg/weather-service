@@ -4,22 +4,12 @@ jobs:
   build-and-test:
     docker:
       - image: circleci/openjdk:17-jdk-buster
-      - image: cimg/node:lts
     steps:
       - checkout
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
             - v1-dependencies-
-            - v1-node-{{ checksum "frontend/package-lock.json" }}
-            - v1-node-
-      - run: npm install --prefix frontend
-      - save_cache:
-          paths:
-            - frontend/node_modules
-          key: v1-node-{{ checksum "frontend/package-lock.json" }}
-      - run: npm run build --prefix frontend
-      - run: ./gradlew copyReactBuild
       - run: ./gradlew test
       - save_cache:
           paths:
@@ -35,7 +25,12 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: ./gradlew jib -Djib.to.image=erikasmu/weather-service:latest -Djib.to.auth.username=$DOCKERHUB_USERNAME -Djib.to.auth.password=$DOCKERHUB_PASS
+      - run:
+          name: Build and Push Docker Image with Jib
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              ./gradlew jib -Djib.to.image=erikasmu/weather-service:latest -Djib.to.auth.username=$DOCKERHUB_USERNAME -Djib.to.auth.password=$DOCKERHUB_PASS
+            fi
 
 workflows:
   version: 2
@@ -45,6 +40,6 @@ workflows:
       - publish-docker-image:
           requires:
             - build-and-test
-#          filters:
-#            branches:
-#              only: main
+          filters:
+            branches:
+              only: main
