@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { fetchWeather } from './WeatherService';
+import useDetermineApiBaseUrl from './useDetermineApiBaseUrl';
 import './App.css';
 
 function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
+  const baseUrl = useDetermineApiBaseUrl();
 
   const handleFetchWeather = async () => {
     try {
-      const data = await fetchWeather(city);
+      const data = await fetchWeather(city, baseUrl);
       setWeather(data);
     } catch (error) {
       console.error(error);

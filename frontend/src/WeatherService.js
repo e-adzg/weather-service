@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080';
-
-export const fetchWeather = async (city) => {
+export const fetchWeather = async (city, baseUrl) => {
   try {
-    const response = await axios.get(`${BASE_URL}/weather?city=${encodeURIComponent(city)}`);
+    const response = await axios.get(`${baseUrl}/weather?city=${encodeURIComponent(city)}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching weather data:', error);
