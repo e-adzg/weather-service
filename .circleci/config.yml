@@ -29,23 +29,14 @@ jobs:
           name: Build and Push Docker Image with Jib
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              TAG="latest"
-            else
-              TAG="test"
+              ./gradlew jib -Djib.to.image=erikasmu/weather-service:latest -Djib.to.auth.username=$DOCKERHUB_USERNAME -Djib.to.auth.password=$DOCKERHUB_PASS
             fi
-            ./gradlew jib -Djib.to.image=erikasmu/weather-service:$TAG -Djib.to.auth.username=$DOCKERHUB_USERNAME -Djib.to.auth.password=$DOCKERHUB_PASS
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
       - build-and-test
-      - publish-docker-image:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              ignore: main
       - publish-docker-image:
           requires:
             - build-and-test
