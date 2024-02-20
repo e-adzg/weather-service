@@ -32,6 +32,7 @@ public class WeatherService {
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("q", city)
                         .queryParam("appid", apiKey)
+                        .queryParam("units", "metric")
                         .build())
                 .exchangeToMono(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {

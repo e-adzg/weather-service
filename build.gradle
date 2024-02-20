@@ -32,15 +32,24 @@ jib {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	implementation 'org.springframework.boot:spring-boot-starter-json'
-
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('copyReactBuild', Copy) {
+	from 'frontend/build/static'
+	into 'src/main/resources/static'
+	include '**/*'
+
+	from 'frontend/build'
+	include 'favicon.ico', 'index.html', 'logo192.png', 'logo512.png', 'manifest.json', 'robots.txt', 'asset-manifest.json'
+}
+
+processResources.dependsOn(copyReactBuild)
