@@ -45,6 +45,33 @@ To run the application in a local Kubernetes cluster using Kind:
 
 5. Access the application at: [http://172.18.0.2:31000/](http://172.18.0.2:31000/)
 
+## Versions
+
+### Application and Build
+
+- Java: `17`
+- Spring Boot: `3.1.5`
+- Spring Dependency Management: `1.1.3`
+- Jib: `3.4.0`
+- Axios: `1.6.7`
+- React: `18.2.0`
+- Gradle: `8.4`
+
+### Tools
+
+- Docker: `25.0.3`
+- Kind: `0.21.0`
+- kubectl (Client Version): `1.28.4`
+- kubectl (Kustomize Version): `5.0.4`
+- IntelliJ IDEA: `2023.2.2 (Community Edition)`
+
+## Troubleshooting
+**Q:** What should I do if changes made to the frontend do not reflect after rebuilding and redeploying the application?
+
+**A:** Force reload the page and reset the browser cache.
+
+## Coding Related Topics
+
 ### Committing Changes to Frontend
 
 To commit changes made to the frontend, please follow these commands:
@@ -58,13 +85,9 @@ To commit changes made to the frontend, please follow these commands:
    ```bash
    npm run build
    ```
-   
+
 3. Run the "copyReactBuild" Gradle task:
    ```bash
    ./gradlew copyReactBuild
    ```
-
-### Troubleshooting
-**Q:** What should I do if changes made to the frontend do not reflect after rebuilding and redeploying the application?
-
-**A:** Force reload the page and reset the browser cache.
+   
