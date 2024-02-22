@@ -44,12 +44,22 @@ tasks.named('test') {
 }
 
 tasks.register('copyReactBuild', Copy) {
-	from 'frontend/build/static'
+	// Base destination directory for the task
 	into 'src/main/resources/static'
-	include '**/*'
 
-	from 'frontend/build'
-	include 'favicon.ico', 'index.html', 'logo192.png', 'logo512.png', 'manifest.json', 'robots.txt', 'asset-manifest.json'
+	// Copy files from 'frontend/build' excluding the 'static' subdirectory
+	from('frontend/build') {
+		exclude 'static/**'
+		include 'favicon.ico', 'index.html', 'logo192.png', 'logo512.png', 'manifest.json', 'robots.txt', 'asset-manifest.json'
+	}
+
+	// Copy files from 'css' and 'js' directories within 'static'
+	from('frontend/build/static/css') {
+		into 'css'
+	}
+	from('frontend/build/static/js') {
+		into 'js'
+	}
 }
 
 processResources.dependsOn(copyReactBuild)
