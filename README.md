@@ -5,7 +5,7 @@ A Java Spring Boot microservice for providing weather forecasts.
 
 ### Running in Docker
 
-To run the application in Docker:
+To run the application in [Docker](https://www.docker.com/):
 
 1. Pull the Docker image:
    ```bash
@@ -21,7 +21,7 @@ To run the application in Docker:
 
 ### Running the Image with Kind
 
-To run the application in a local Kubernetes cluster using Kind:
+To run the application in a local Kubernetes cluster using [Kind](https://kind.sigs.k8s.io/):
 
 1. Pull the Docker image:
    ```bash
@@ -44,6 +44,60 @@ To run the application in a local Kubernetes cluster using Kind:
    ```
 
 5. Access the application at: [http://172.18.0.2:31000/](http://172.18.0.2:31000/)
+
+## API Endpoints
+
+### Weather Forecast Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/weather`
+- **Query Parameters:**
+   - `city`: The name of the city for which the weather forecast is requested.
+- **Example Request:**
+  ```
+  GET http://localhost:8080/weather?city=Dublin
+  ```
+- **Expected Response:**
+   - **Content-Type:** `application/json`
+   - **Body:**
+  ```json
+  {
+    "coord": {"lon": -6.4389, "lat": 53.3592},
+    "weather": [{"id": 802, "main": "Clouds", "description": "scattered clouds", "icon": "03d"}],
+    "base": "stations",
+    "main": {"temp": 7.11, "feels_like": 4.67, "temp_min": 5.29, "temp_max": 9.35, "pressure": 993, "humidity": 81},
+    "visibility": 10000,
+    "wind": {"speed": 3.6, "deg": 230},
+    "clouds": {"all": 40},
+    "dt": 1708775479,
+    "sys": {"type": 2, "id": 2036125, "country": "IE", "sunrise": 1708759583, "sunset": 1708797126},
+    "timezone": 0,
+    "id": 2962785,
+    "name": "Lucan",
+    "cod": 200
+  }
+  ```
+
+### Spring Boot Actuator Health Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/actuator/health`
+- **Example Request:**
+  ```
+  GET http://localhost:8080/actuator/health
+  ```
+- **Expected Response:**
+   - **Content-Type:** `application/json`
+   - **Body:**
+  ```json
+  {
+    "status": "UP",
+    "groups": [
+        "liveness",
+        "readiness"
+    ]
+  }
+  ```
 
 ## Versions
 
