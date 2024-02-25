@@ -6,15 +6,25 @@ import './App.css';
 function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
+  const [error, setError] = useState(null);
   const baseUrl = useDetermineApiBaseUrl();
 
   const handleFetchWeather = async () => {
+    setWeather(null);
+    setError(null);
+    if (!city.trim()) {
+      setError("City name cannot be empty.");
+      return;
+    }
     try {
       const data = await fetchWeather(city, baseUrl);
       setWeather(data);
+      if (data.cod !== 200) {
+        throw new Error(data.message || "Error fetching weather data.");
+      }
     } catch (error) {
       console.error(error);
-      alert('Failed to fetch weather');
+      setError('Check the spelling of the city.');
     }
   };
 
@@ -28,6 +38,7 @@ function App() {
           placeholder="Enter city name"
         />
         <button onClick={handleFetchWeather}>Get Weather</button>
+        {error && <p className="error-message">{error}</p>}
         {weather && (
           <div>
             <h2>Weather in {weather.name}, {weather.sys.country}</h2>

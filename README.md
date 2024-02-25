@@ -135,12 +135,17 @@ To commit changes made to the frontend, please follow these commands:
    cd frontend
    ```
 
-2. Build React using npm:
+2. Install dependencies/packages:
+   ```bash
+   npm install
+   ```
+
+3. Build React using npm:
    ```bash
    npm run build
    ```
 
-3. Run the "copyReactBuild" Gradle task:
+4. Run the "copyReactBuild" Gradle task:
    ```bash
    ./gradlew copyReactBuild
    ```
