@@ -3,6 +3,10 @@ import { fetchWeather } from './WeatherService';
 import useDetermineApiBaseUrl from './useDetermineApiBaseUrl';
 import './App.css';
 
+const capitalizeFirstLetterOfEachWord = (str) => {
+  return str.replace(/\b(\w)/g, s => s.toUpperCase());
+}
+
 function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
@@ -18,10 +22,11 @@ function App() {
     }
     try {
       const data = await fetchWeather(city, baseUrl);
-      setWeather(data);
       if (data.cod !== 200) {
         throw new Error(data.message || "Error fetching weather data.");
       }
+      data.weather[0].description = capitalizeFirstLetterOfEachWord(data.weather[0].description);
+      setWeather(data);
     } catch (error) {
       console.error(error);
       setError('Check the spelling of the city.');
