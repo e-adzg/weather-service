@@ -3,27 +3,11 @@ A Java Spring Boot microservice for providing weather forecasts.
 
 ## Running the Application
 
-### Running in Docker
-
-To run the application in [Docker](https://www.docker.com/):
-
-1. Pull the Docker image:
-   ```bash
-   docker pull erikasmu/weather-service:latest
-   ```
-
-2. Run the Docker container:
-   ```bash
-   docker run -p 8080:8080 erikasmu/weather-service:latest
-   ```
-
-3. Access the application at: [http://localhost:8080/](http://localhost:8080/)
-
 ### Running the Image with Kind
 
 To run the application in a local Kubernetes cluster using [Kind](https://kind.sigs.k8s.io/):
 
-1. Pull the Docker image:
+1. Pull the [Docker](https://www.docker.com/) image:
    ```bash
    docker pull erikasmu/weather-service:latest
    ```
@@ -33,7 +17,7 @@ To run the application in a local Kubernetes cluster using [Kind](https://kind.s
    kind create cluster
    ```
 
-3. Load the Docker image into Kind:
+3. Load the Docker image using Kind:
    ```bash
    kind load docker-image erikasmu/weather-service:latest
    ```
@@ -55,11 +39,10 @@ To run the application in a local Kubernetes cluster using [Kind](https://kind.s
    - `city`: The name of the city for which the weather forecast is requested.
 - **Example Request:**
   ```
-  GET http://localhost:8080/weather?city=Dublin
+  GET http://172.18.0.2:31000/weather?city=Dublin
   ```
 - **Expected Response:**
    - **Content-Type:** `application/json`
-   - **Body:**
   ```json
   {
     "coord": {"lon": -6.4389, "lat": 53.3592},
@@ -78,6 +61,87 @@ To run the application in a local Kubernetes cluster using [Kind](https://kind.s
   }
   ```
 
+### Nodes Metrics Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/metrics/nodes`
+- **Example Request:**
+  ```
+  GET http://172.18.0.2:31000/metrics/nodes
+  ```
+- **Expected Response:**
+    - **Content-Type:** `application/json`
+  ```json
+  [
+      {
+          "nodeName": "kind-control-plane",
+          "cpuUsage": 0.682112787,
+          "memoryUsage": 887156736
+      }
+  ]
+  ```
+
+### Pods Metrics Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/metrics/pods`
+- **Example Request:**
+  ```
+  GET http://172.18.0.2:31000/metrics/pods
+  ```
+- **Expected Response:**
+    - **Content-Type:** `application/json`
+  ```json
+  [
+    {
+        "podName": "redis-8c5fbc844-62kz2",
+        "namespace": "default",
+        "labels": {
+            "app": "redis",
+            "pod-template-hash": "8c5fbc844"
+        },
+        "status": "Running",
+        "creationTimestamp": "2024-03-01T23:08:15Z"
+    },
+    {
+        "podName": "weather-service-deployment-59b77db694-49qrm",
+        "namespace": "default",
+        "labels": {
+            "app": "weather-service",
+            "pod-template-hash": "59b77db694"
+        },
+        "status": "Running",
+        "creationTimestamp": "2024-03-01T23:08:15Z"
+    },
+    {
+        "podName": "weather-service-deployment-59b77db694-zrbt2",
+        "namespace": "default",
+        "labels": {
+            "app": "weather-service",
+            "pod-template-hash": "59b77db694"
+        },
+        "status": "Running",
+        "creationTimestamp": "2024-03-01T23:08:15Z"
+    }
+  ]
+  ```
+
+### Request Count Metrics Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/metrics/request-count`
+- **Example Request:**
+  ```
+  GET http://172.18.0.2:31000/metrics/request-count
+  ```
+- **Expected Response:**
+    - **Content-Type:** `application/json`
+  ```json
+  {
+      "pod:weather-service-deployment-59b77db694-49qrm": 1
+  }
+  ```
+
 ### Spring Boot Actuator Health Endpoint
 
 - **Method:** GET
@@ -88,7 +152,6 @@ To run the application in a local Kubernetes cluster using [Kind](https://kind.s
   ```
 - **Expected Response:**
    - **Content-Type:** `application/json`
-   - **Body:**
   ```json
   {
     "status": "UP",

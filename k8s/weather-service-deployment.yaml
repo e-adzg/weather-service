@@ -33,6 +33,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name  # Environment variable to store the pod name
+          resources:
+            requests:
+              cpu: "500m" # Requesting millicores of CPU
+#            limits:
+#              cpu: "1000m" # Setting millicores limit of CPU
 ---
 
 # Service definition to expose the weather-service
