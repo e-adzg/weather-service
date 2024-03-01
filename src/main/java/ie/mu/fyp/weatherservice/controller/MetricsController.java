@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 public class MetricsController {
 
     private static final Logger logger = LoggerFactory.getLogger(MetricsService.class);
-
     private final MetricsService metricsService;
 
     @Autowired
@@ -55,5 +55,13 @@ public class MetricsController {
             logger.error("Error fetching pod metrics", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    // Endpoint to get request count per pod.
+    @GetMapping("/request-count")
+    public ResponseEntity<?> getRequestCount() {
+        // Calls service to get pod requests.
+        Map<String, Integer> counts = metricsService.getAllPodRequestCounts();
+        return ResponseEntity.ok(counts);
     }
 }

@@ -13,13 +13,15 @@ import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.util.Config;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -31,10 +33,12 @@ public class MetricsService {
     private static final Logger logger = LoggerFactory.getLogger(MetricsService.class);
     private final ApiClient client;
     private final CoreV1Api coreV1Api;
+    private final StringRedisTemplate redisTemplate;
 
     @Autowired
-    public MetricsService(CoreV1Api coreV1Api) throws IOException {
+    public MetricsService(CoreV1Api coreV1Api, StringRedisTemplate redisTemplate) throws IOException {
         this.coreV1Api = coreV1Api;
+        this.redisTemplate = redisTemplate;
         this.client = Config.defaultClient();
     }
 
@@ -92,5 +96,50 @@ public class MetricsService {
             return Collections.singletonList(errorInfo);
         }
         return podMetricsInfos;
+    }
+
+    public void incrementRequestCount(String podName) {
+        // Create Redis key using pod name
+        String key = "pod:" + podName;
+        try {
+            // Obtain ValueOperations object from redisTemplate to perform operations on string values
+            ValueOperations<String, String> ops = this.redisTemplate.opsForValue();
+
+            // Increment value associated with key in Redis. If key doesn't exist, it's created and set to 1
+            ops.increment(key);
+
+            logger.info("Incremented request count for pod: {}", podName);
+        } catch (Exception e) {
+            logger.error("Failed to increment request count for pod: {}", podName, e);
+        }
+    }
+
+    public Map<String, Integer> getAllPodRequestCounts() {
+        // Initialize map to hold the counts for each pod
+        Map<String, Integer> counts = new HashMap<>();
+
+        // Obtain connection to Redis
+        try (RedisConnection redisConnection = redisTemplate.getConnectionFactory().getConnection()) {
+
+            // Use scan command to find all keys starting with "pod:"
+            Cursor<byte[]> cursor = redisConnection.keyCommands().scan(ScanOptions.scanOptions().match("pod:*").build());
+
+            // Iterate over the keys found by the scan command
+            while (cursor.hasNext()) {
+                // Convert key from bytes to String
+                String key = new String(cursor.next());
+
+                // Retrieve count associated with key from Redis
+                String count = redisTemplate.opsForValue().get(key);
+
+                // If count exists, add it to the map
+                if (count != null) {
+                    counts.put(key, Integer.parseInt(count));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to retrieve request counts", e);
+        }
+        return counts;
     }
 }
