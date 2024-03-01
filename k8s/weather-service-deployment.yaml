@@ -1,0 +1,57 @@
+# Define a ServiceAccount for the weather-service
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: weather-service-account
+  namespace: default
+---
+
+# Deployment definition for weather-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-service-deployment
+  namespace: default
+spec:
+  replicas: 2  # Number of replicas
+  selector:
+    matchLabels:
+      app: weather-service
+  template:
+    metadata:
+      labels:
+        app: weather-service
+    spec:
+      serviceAccountName: weather-service-account  # Use the defined ServiceAccount
+      containers:
+        - name: weather-service
+          image: erikasmu/weather-service:latest  # Container image
+          ports:
+            - containerPort: 8080  # Container port
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name  # Environment variable to store the pod name
+          resources:
+            requests:
+              cpu: "500m" # Requesting millicores of CPU
+#            limits:
+#              cpu: "1000m" # Setting millicores limit of CPU
+---
+
+# Service definition to expose the weather-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-service
+  namespace: default
+spec:
+  type: NodePort  # Expose the service outside the cluster
+  selector:
+    app: weather-service  # Selects the application pods
+  ports:
+    - protocol: TCP
+      port: 8080  # Service port
+      targetPort: 8080  # Pod port
+      nodePort: 31000  # Node port
