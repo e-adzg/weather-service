@@ -24,6 +24,23 @@
   color: white;
 }
 
+.fade-in, .fade-out {
+  transition: opacity 1s ease-in-out;
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.weather-display {
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .Metrics-toggle {
   padding: 20px;
   background-color: #c7c7c7;
