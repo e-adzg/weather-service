@@ -115,6 +115,26 @@ function App() {
             placeholder="Enter city name"
             helperText={error || "Enter the city name to get weather"}
             variant="standard"
+            sx={{
+              '& label': {
+                color: 'white',
+              },
+              '& .MuiInput-underline:before': {
+                borderBottomColor: 'white',
+              },
+              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                borderBottomColor: 'white',
+              },
+              '& .MuiInput-input': {
+                color: 'white',
+              },
+              '& .MuiFormHelperText-root': {
+                color: 'white',
+              },
+              '& .Mui-error': {
+                color: '#f44336',
+              }
+            }}
           />
           <IconButton aria-label="search" color="primary" onClick={handleFetchWeather}>
             {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
