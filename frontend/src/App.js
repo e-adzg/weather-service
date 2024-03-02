@@ -10,6 +10,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Fade from '@mui/material/Fade';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -93,8 +95,10 @@ function App() {
             helperText={error || "Enter the city name to get weather"}
             variant="standard"
           />
+          <IconButton aria-label="search" color="primary" onClick={handleFetchWeather}>
+            <SearchIcon />
+          </IconButton>
         </Box>
-        <button onClick={handleFetchWeather}>Get Weather</button>
         {weather && (
           <div>
             <h2>Weather in {weather.name}, {weather.sys.country}</h2>
