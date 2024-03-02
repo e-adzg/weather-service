@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 
 function CustomTable({ podsMetrics, requestCountMetrics }) {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer elevation={8} component={Paper} sx={{ borderRadius: '20px' }}>
       <Table sx={{ minWidth: 650 }} aria-label="customized table">
         <TableHead>
           <TableRow>
