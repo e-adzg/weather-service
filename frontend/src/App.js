@@ -1,9 +1,14 @@
 // App.js
-import React, { useState } from 'react';
-import { fetchWeather } from './WeatherService';
+import React, { useState, useEffect } from 'react';
+import { fetchWeather, fetchNodesMetrics } from './WeatherService';
+import BasicCard from './BasicCard';
 import './App.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Fade from '@mui/material/Fade';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -13,6 +18,20 @@ function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState(null);
+  const [nodesMetrics, setNodesMetrics] = useState([]);
+  const [showMetrics, setShowMetrics] = useState(false);
+
+  useEffect(() => {
+    const getNodesMetrics = async () => {
+      const data = await fetchNodesMetrics();
+      setNodesMetrics(data);
+    };
+
+    getNodesMetrics();
+    const intervalId = setInterval(getNodesMetrics, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleFetchWeather = async () => {
     setWeather(null);
@@ -72,6 +91,27 @@ function App() {
           </div>
         )}
       </header>
+
+      <div className="Metrics-toggle">
+        <FormGroup>
+          <FormControlLabel
+            control={<Switch checked={showMetrics} onChange={() => setShowMetrics(!showMetrics)} color="primary" />}
+            label="Metrics"
+            labelPlacement="top"
+          />
+        </FormGroup>
+        {showMetrics && nodesMetrics.map((node) => (
+          <Fade in={showMetrics} key={node.nodeName} timeout={500}>
+            <div>
+              <BasicCard
+                nodeName={node.nodeName}
+                cpuUsage={node.cpuUsage}
+                memoryUsage={node.memoryUsage}
+              />
+            </div>
+          </Fade>
+        ))}
+      </div>
     </div>
   );
 }

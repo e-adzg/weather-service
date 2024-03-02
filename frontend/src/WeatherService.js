@@ -12,3 +12,18 @@ export const fetchWeather = async (city) => {
     throw error;
   }
 };
+
+export const fetchNodesMetrics = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/metrics/nodes`);
+    const formattedData = response.data.map(node => ({
+      ...node,
+      cpuUsage: (node.cpuUsage * 100).toFixed(2) + ' %',
+      memoryUsage: (node.memoryUsage / 1e6).toFixed(2) + ' MB'
+    }));
+    return formattedData;
+  } catch (error) {
+    console.error('Error fetching nodes metrics:', error);
+    throw error;
+  }
+};
