@@ -1,7 +1,9 @@
+// App.js
 import React, { useState } from 'react';
 import { fetchWeather } from './WeatherService';
-import useDetermineApiBaseUrl from './useDetermineApiBaseUrl';
 import './App.css';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -11,7 +13,6 @@ function App() {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState(null);
-  const baseUrl = useDetermineApiBaseUrl();
 
   const handleFetchWeather = async () => {
     setWeather(null);
@@ -21,7 +22,7 @@ function App() {
       return;
     }
     try {
-      const data = await fetchWeather(city, baseUrl);
+      const data = await fetchWeather(city);
       if (data.cod !== 200) {
         throw new Error(data.message || "Error fetching weather data.");
       }
@@ -36,14 +37,26 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <input
-          type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="Enter city name"
-        />
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <TextField
+            error={!!error}
+            id="standard-error-helper-text"
+            label="City Name"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Enter city name"
+            helperText={error || "Enter the city name to get weather"}
+            variant="standard"
+          />
+        </Box>
         <button onClick={handleFetchWeather}>Get Weather</button>
-        {error && <p className="error-message">{error}</p>}
         {weather && (
           <div>
             <h2>Weather in {weather.name}, {weather.sys.country}</h2>
