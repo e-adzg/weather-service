@@ -27,3 +27,23 @@ export const fetchNodesMetrics = async () => {
     throw error;
   }
 };
+
+export const fetchPodsMetrics = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/metrics/pods`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching pods metrics:', error);
+    throw error;
+  }
+};
+
+export const fetchRequestCountMetrics = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/metrics/request-count`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching request count metrics:', error);
+    throw error;
+  }
+};

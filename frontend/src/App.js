@@ -1,7 +1,8 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { fetchWeather, fetchNodesMetrics } from './WeatherService';
+import { fetchWeather, fetchNodesMetrics, fetchPodsMetrics, fetchRequestCountMetrics } from './WeatherService';
 import BasicCard from './BasicCard';
+import CustomTable from './CustomTable';
 import './App.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -20,19 +21,37 @@ function App() {
   const [error, setError] = useState(null);
   const [nodesMetrics, setNodesMetrics] = useState([]);
   const [showMetrics, setShowMetrics] = useState(false);
+  const [podsMetrics, setPodsMetrics] = useState([]);
+  const [requestCountMetrics, setRequestCountMetrics] = useState({});
 
   useEffect(() => {
-    const getNodesMetrics = async () => {
-      const data = await fetchNodesMetrics();
-      setNodesMetrics(data);
+    const fetchMetrics = async () => {
+      if (showMetrics) {
+        const nodesData = await fetchNodesMetrics();
+        setNodesMetrics(nodesData);
+  
+        const podsData = await fetchPodsMetrics();
+        setPodsMetrics(podsData);
+  
+        const requestCountData = await fetchRequestCountMetrics();
+        setRequestCountMetrics(requestCountData);
+      }
     };
-
-    getNodesMetrics();
-    const intervalId = setInterval(getNodesMetrics, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
+  
+    fetchMetrics();
+  
+    let intervalId;
+    if (showMetrics) {
+      intervalId = setInterval(fetchMetrics, 5000);
+    }
+  
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [showMetrics]);
+  
   const handleFetchWeather = async () => {
     setWeather(null);
     setError(null);
@@ -111,6 +130,13 @@ function App() {
             </div>
           </Fade>
         ))}
+        {showMetrics && podsMetrics.length > 0 && (
+          <Fade in={showMetrics} timeout={500}>
+            <div>
+              <CustomTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
+            </div>
+          </Fade>
+        )}
       </div>
     </div>
   );
