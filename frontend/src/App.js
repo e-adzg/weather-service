@@ -12,6 +12,7 @@ import Switch from '@mui/material/Switch';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -27,6 +28,7 @@ function App() {
   const [requestCountMetrics, setRequestCountMetrics] = useState({});
   const [fadeState, setFadeState] = useState('fade-in');
   const [fadeTransition, setFadeTransition] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -59,6 +61,7 @@ function App() {
   const FADE_DURATION = 1000;
 
   const handleFetchWeather = async () => {
+      setIsLoading(true);
       clearTimeout(fadeTransition);
   
       setFadeState('fade-out');
@@ -69,6 +72,7 @@ function App() {
   
           if (!city.trim()) {
               setError("City name cannot be empty.");
+              setIsLoading(false);
               return;
           }
   
@@ -85,6 +89,7 @@ function App() {
               setError('Check the spelling of the city.');
               setFadeState('fade-in');
           }
+          setIsLoading(false);
       }, FADE_DURATION / 1);
   
       setFadeTransition(timeout);
@@ -112,7 +117,7 @@ function App() {
             variant="standard"
           />
           <IconButton aria-label="search" color="primary" onClick={handleFetchWeather}>
-            <SearchIcon />
+            {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
           </IconButton>
         </Box>
         <div className={`weather-display ${fadeState}`} style={{ transitionDuration: `${FADE_DURATION}ms` }}>
