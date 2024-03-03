@@ -1,4 +1,4 @@
-// WeatherService.js
+// BackendService.js
 import axios from 'axios';
 
 const baseUrl = 'http://172.18.0.2:31000';
@@ -57,6 +57,17 @@ export const fetchRequestCountMetrics = async () => {
     return response.data;
   } catch (error) {
     console.error('Error fetching request count metrics:', error);
+    throw error;
+  }
+};
+
+// Fetch HPA metrics
+export const fetchHpaMetrics = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/metrics/hpa`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching HPA details:', error);
     throw error;
   }
 };

@@ -1,8 +1,9 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { fetchWeather, fetchNodesMetrics, fetchPodsMetrics, fetchRequestCountMetrics } from './WeatherService';
+import { fetchWeather, fetchNodesMetrics, fetchPodsMetrics, fetchRequestCountMetrics, fetchHpaMetrics } from './BackendService';
 import NodeCard from './NodeCard';
 import PodMetricTable from './PodMetricTable';
+import HPACard from './HPACard';
 import './App.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -31,6 +32,7 @@ function App() {
   const [nodesMetrics, setNodesMetrics] = useState([]);
   const [showMetrics, setShowMetrics] = useState(false);
   const [podsMetrics, setPodsMetrics] = useState([]);
+  const [hpaMetrics, setHpaMetrics] = useState([]);
   const [requestCountMetrics, setRequestCountMetrics] = useState({});
   const [fadeState, setFadeState] = useState('fade-in');
   const [isLoading, setIsLoading] = useState(false);
@@ -90,6 +92,9 @@ function App() {
 
         const requestCountData = await fetchRequestCountMetrics();
         setRequestCountMetrics(requestCountData);
+
+        const hpaData = await fetchHpaMetrics();
+        setHpaMetrics(hpaData);
       }
     };
 
@@ -218,18 +223,29 @@ function App() {
             />
           </FormGroup>
 
-          {/* Node Metrics */}
-          {showMetrics && nodesMetrics.map((node) => (
-            <Fade in={showMetrics} key={node.nodeName} timeout={500}>
-              <div>
-                <NodeCard
-                  nodeName={node.nodeName}
-                  cpuUsage={node.cpuUsage}
-                  memoryUsage={node.memoryUsage}
-                />
+          {/* Node and HPA Metrics */}
+          {showMetrics && (
+            <Fade in={showMetrics} timeout={500}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {nodesMetrics.map((node) => (
+                  <NodeCard
+                    key={node.nodeName}
+                    nodeName={node.nodeName}
+                    cpuUsage={node.cpuUsage}
+                    memoryUsage={node.memoryUsage}
+                  />
+                ))}
+                {hpaMetrics.map((hpa) => (
+                  <HPACard
+                    key={hpa.name}
+                    name={hpa.name}
+                    currentReplicas={hpa.currentReplicas}
+                    desiredReplicas={hpa.desiredReplicas}
+                  />
+                ))}
               </div>
             </Fade>
-          ))}
+          )}
 
           {/* Pod Metrics */}
           {showMetrics && podsMetrics.length > 0 && (
