@@ -17,6 +17,8 @@ import image1 from './assets/image1.png';
 import image2 from './assets/image2.png';
 import WeatherTable from './WeatherTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
+import avatarImage from './assets/image3.jpg';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -130,6 +132,13 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
+      <a href="https://github.com/e-adzg" target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', top: 20, left: 20 }}>
+          <Avatar
+            alt="e-adzg"
+            src={avatarImage}
+            sx={{ width: 56, height: 56, border: '2px solid white', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)'}}
+          />
+        </a>
         <header className="App-header">
           <Box
             component="form"
