@@ -13,6 +13,8 @@ import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
+import image1 from './assets/image1.png';
+import image2 from './assets/image2.png';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
@@ -29,6 +31,23 @@ function App() {
   const [fadeState, setFadeState] = useState('fade-in');
   const [fadeTransition, setFadeTransition] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentImage, setCurrentImage] = useState(image1);
+  const [showImages, setShowImages] = useState(false);
+
+  useEffect(() => {
+    let intervalId;
+    
+    if (!weather && !isLoading) {
+      setShowImages(true);
+      intervalId = setInterval(() => {
+        setCurrentImage(current => (current === image1 ? image2 : image1));
+      }, 1000);
+    } else {
+      setShowImages(false);
+    }
+  
+    return () => clearInterval(intervalId);
+  }, [weather, isLoading]);
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -62,8 +81,6 @@ function App() {
 
   const handleFetchWeather = async () => {
       setIsLoading(true);
-      clearTimeout(fadeTransition);
-  
       setFadeState('fade-out');
   
       const timeout = setTimeout(async () => {
@@ -73,6 +90,8 @@ function App() {
           if (!city.trim()) {
               setError("City name cannot be empty.");
               setIsLoading(false);
+              setShowImages(true);
+              setFadeState('fade-in');
               return;
           }
   
@@ -83,15 +102,16 @@ function App() {
               }
               data.weather[0].description = capitalizeFirstLetterOfEachWord(data.weather[0].description);
               setWeather(data);
-              setFadeState('fade-in');
+              setShowImages(false);
           } catch (error) {
               console.error(error);
               setError('Check the spelling of the city.');
-              setFadeState('fade-in');
+              setShowImages(true);
           }
           setIsLoading(false);
-      }, FADE_DURATION / 1);
-  
+          setFadeState('fade-in');
+      }, FADE_DURATION);
+    
       setFadeTransition(timeout);
   };
 
@@ -141,7 +161,14 @@ function App() {
           </IconButton>
         </Box>
         <div className={`weather-display ${fadeState}`} style={{ transitionDuration: `${FADE_DURATION}ms` }}>
-          {weather && (
+          {!weather && !isLoading ? (
+            <img src={currentImage} alt="Weather Placeholder" style={{
+              width: '100%',
+              maxWidth: '600px',
+              opacity: fadeState === 'fade-in' ? 1 : 0,
+              transform: 'scale(0.5)',
+            }} />
+          ) : weather ? (
             <div>
               <h2>Weather in {weather.name}, {weather.sys.country}</h2>
               <p>Description: {weather.weather[0].description}</p>
@@ -154,7 +181,9 @@ function App() {
               <p>Cloudiness: {weather.clouds.all}%</p>
               <p>Sunrise: {new Date(weather.sys.sunrise * 1000).toLocaleTimeString()}, Sunset: {new Date(weather.sys.sunset * 1000).toLocaleTimeString()}</p>
             </div>
-          )}
+          ) : isLoading ? (
+            <CircularProgress size={24} />
+          ) : null}
         </div>
       </header>
 
