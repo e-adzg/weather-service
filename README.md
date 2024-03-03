@@ -144,6 +144,27 @@ To run the application in a local Kubernetes cluster using [Kind](https://kind.s
   }
   ```
 
+### HPA Metrics Endpoint
+
+- **Method:** GET
+- **Endpoint:** `/metrics/hpa`
+- **Example Request:**
+  ```
+  GET http://172.18.0.2:31000/metrics/hpa
+  ```
+
+- **Expected Response:**
+    - **Content-Type:** `application/json`
+  ```json
+  [
+      {
+          "name": "weather-service-hpa",
+          "currentReplicas": 2,
+          "desiredReplicas": 2
+      }
+  ]
+  ```
+
 ### Spring Boot Actuator Health Endpoint
 
 - **Method:** GET

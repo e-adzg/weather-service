@@ -2,6 +2,7 @@ package ie.mu.fyp.weatherservice.controller;
 
 import ie.mu.fyp.weatherservice.service.MetricsService;
 import ie.mu.fyp.weatherservice.dto.NodeMetricsDto;
+import ie.mu.fyp.weatherservice.dto.HPADto;
 import ie.mu.fyp.weatherservice.dto.PodMetricsDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,18 @@ public class MetricsController {
         // Calls service to get pod requests.
         Map<String, Integer> counts = metricsService.getAllPodRequestCounts();
         return ResponseEntity.ok(counts);
+    }
+
+    // Endpoint to get hpa metrics.
+    @GetMapping("/hpa")
+    public ResponseEntity<List<HPADto>> getHPADetails() {
+        try {
+            // Calls service to get hpa metrics.
+            List<HPADto> hpaDetails = metricsService.getHPADetails();
+            return ResponseEntity.ok(hpaDetails);
+        } catch (Exception e) {
+            logger.error("Error fetching HPA metrics", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
