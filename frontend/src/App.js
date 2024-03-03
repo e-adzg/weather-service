@@ -16,11 +16,20 @@ import CircularProgress from '@mui/material/CircularProgress';
 import image1 from './assets/image1.png';
 import image2 from './assets/image2.png';
 import WeatherTable from './WeatherTable';
-
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const capitalizeFirstLetterOfEachWord = (str) => {
   return str.replace(/\b(\w)/g, s => s.toUpperCase());
 }
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "'M PLUS 1p', sans-serif",
+    body1: {
+      fontWeight: 700,
+    },
+  },
+});
 
 function App() {
   const [city, setCity] = useState('');
@@ -119,98 +128,100 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Box
-          component="form"
-          onSubmit={handleFetchWeather}
-          sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
-          }}
-          noValidate
-          autoComplete="off"
-        >
-          <TextField
-            error={!!error}
-            id="standard-error-helper-text"
-            label="City Name"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Enter city name"
-            helperText={error || "Enter the city name to get weather"}
-            variant="standard"
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <header className="App-header">
+          <Box
+            component="form"
+            onSubmit={handleFetchWeather}
             sx={{
-              '& label': {
-                color: 'white',
-              },
-              '& .MuiInput-underline:before': {
-                borderBottomColor: 'white',
-              },
-              '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                borderBottomColor: 'white',
-              },
-              '& .MuiInput-input': {
-                color: 'white',
-              },
-              '& .MuiFormHelperText-root': {
-                color: 'white',
-              },
-              '& .Mui-error': {
-                color: '#f44336',
-              }
+              '& .MuiTextField-root': { m: 1, width: '25ch' },
             }}
-          />
-          <IconButton type="submit" aria-label="search" color="primary" onClick={handleFetchWeather}>
-            {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
-          </IconButton>
-        </Box>
-        <div className={`weather-display ${fadeState}`} style={{ transitionDuration: `${FADE_DURATION}ms` }}>
-          {!weather && !isLoading ? (
-            <img src={currentImage} alt="Weather Placeholder" style={{
-              width: '100%',
-              maxWidth: '600px',
-              opacity: fadeState === 'fade-in' ? 1 : 0,
-              transform: 'scale(0.5)',
-            }} />
-          ) : weather ? (
-            <div>
-              <h2>Weather in {weather.name}, {weather.sys.country}</h2>
-              <WeatherTable weather={weather} />
-            </div>
-          ) : isLoading ? (
-            <CircularProgress size={24} />
-          ) : null}
-        </div>
-      </header>
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              error={!!error}
+              id="standard-error-helper-text"
+              label="City Name"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Enter city name"
+              helperText={error || "Enter the city name to get weather"}
+              variant="standard"
+              sx={{
+                '& label': {
+                  color: 'white',
+                },
+                '& .MuiInput-underline:before': {
+                  borderBottomColor: 'white',
+                },
+                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                  borderBottomColor: 'white',
+                },
+                '& .MuiInput-input': {
+                  color: 'white',
+                },
+                '& .MuiFormHelperText-root': {
+                  color: 'white',
+                },
+                '& .Mui-error': {
+                  color: '#f44336',
+                }
+              }}
+            />
+            <IconButton type="submit" aria-label="search" color="primary" onClick={handleFetchWeather}>
+              {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
+            </IconButton>
+          </Box>
+          <div className={`weather-display ${fadeState}`} style={{ transitionDuration: `${FADE_DURATION}ms` }}>
+            {!weather && !isLoading ? (
+              <img src={currentImage} alt="Weather Placeholder" style={{
+                width: '100%',
+                maxWidth: '600px',
+                opacity: fadeState === 'fade-in' ? 1 : 0,
+                transform: 'scale(0.5)',
+              }} />
+            ) : weather ? (
+              <div>
+                <h2 className="bold-text">Weather in {weather.name}, {weather.sys.country}</h2>
+                <WeatherTable weather={weather} />
+              </div>
+            ) : isLoading ? (
+              <CircularProgress size={24} />
+            ) : null}
+          </div>
+        </header>
 
-      <div className="Metrics-toggle">
-        <FormGroup>
-          <FormControlLabel
-            control={<Switch checked={showMetrics} onChange={() => setShowMetrics(!showMetrics)} color="primary" />}
-            label="Metrics"
-            labelPlacement="top"
-          />
-        </FormGroup>
-        {showMetrics && nodesMetrics.map((node) => (
-          <Fade in={showMetrics} key={node.nodeName} timeout={500}>
-            <div>
-              <BasicCard
-                nodeName={node.nodeName}
-                cpuUsage={node.cpuUsage}
-                memoryUsage={node.memoryUsage}
-              />
-            </div>
-          </Fade>
-        ))}
-        {showMetrics && podsMetrics.length > 0 && (
-          <Fade in={showMetrics} timeout={500}>
-            <div>
-              <CustomTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
-            </div>
-          </Fade>
-        )}
+        <div className="Metrics-toggle">
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={showMetrics} onChange={() => setShowMetrics(!showMetrics)} color="primary" />}
+              label="Metrics"
+              labelPlacement="top"
+            />
+          </FormGroup>
+          {showMetrics && nodesMetrics.map((node) => (
+            <Fade in={showMetrics} key={node.nodeName} timeout={500}>
+              <div>
+                <BasicCard
+                  nodeName={node.nodeName}
+                  cpuUsage={node.cpuUsage}
+                  memoryUsage={node.memoryUsage}
+                />
+              </div>
+            </Fade>
+          ))}
+          {showMetrics && podsMetrics.length > 0 && (
+            <Fade in={showMetrics} timeout={500}>
+              <div>
+                <CustomTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
+              </div>
+            </Fade>
+          )}
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
