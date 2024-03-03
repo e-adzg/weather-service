@@ -1,8 +1,8 @@
 // App.js
 import React, { useState, useEffect } from 'react';
 import { fetchWeather, fetchNodesMetrics, fetchPodsMetrics, fetchRequestCountMetrics } from './WeatherService';
-import BasicCard from './BasicCard';
-import CustomTable from './CustomTable';
+import NodeCard from './NodeCard';
+import PodMetricTable from './PodMetricTable';
 import './App.css';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -33,13 +33,11 @@ function App() {
   const [podsMetrics, setPodsMetrics] = useState([]);
   const [requestCountMetrics, setRequestCountMetrics] = useState({});
   const [fadeState, setFadeState] = useState('fade-in');
-  const [fadeTransition, setFadeTransition] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(image1);
-  const [showImages, setShowImages] = useState(false);
-  const [requestCount, setRequestCount] = useState(0);
   const [sliderValue, setSliderValue] = useState(0);
 
+  // Function to handle sending weather requests
   const handleSendRequests = async () => {
     for (let i = 0; i < sliderValue; i++) {
       try {
@@ -50,11 +48,8 @@ function App() {
       }
     }
   };
-
-  const capitalizeFirstLetterOfEachWord = (str) => {
-    return str.replace(/\b(\w)/g, s => s.toUpperCase());
-  }
   
+  // Theme customization
   const theme = createTheme({
     typography: {
       fontFamily: "'M PLUS 1p', sans-serif",
@@ -64,25 +59,26 @@ function App() {
     },
   });
   
+  // Handle slider value change
   const handleSliderChange = (event, newValue) => {
     setSliderValue(newValue);
   };
 
+  // Image GIF effect
   useEffect(() => {
     let intervalId;
 
     if (!weather && !isLoading) {
-      setShowImages(true);
       intervalId = setInterval(() => {
         setCurrentImage(current => (current === image1 ? image2 : image1));
       }, 1000);
     } else {
-      setShowImages(false);
     }
 
     return () => clearInterval(intervalId);
   }, [weather, isLoading]);
 
+  // Fetching metrics data
   useEffect(() => {
     const fetchMetrics = async () => {
       if (showMetrics) {
@@ -113,6 +109,7 @@ function App() {
 
   const FADE_DURATION = 1000;
 
+  // Fetch weather data on submit
   const handleFetchWeather = async (e) => {
     e.preventDefault()
     setIsLoading(true);
@@ -125,7 +122,6 @@ function App() {
       if (!city.trim()) {
         setError("City name cannot be empty.");
         setIsLoading(false);
-        setShowImages(true);
         setFadeState('fade-in');
         return;
       }
@@ -135,24 +131,21 @@ function App() {
         if (data.cod !== 200) {
           throw new Error(data.message || "Error fetching weather data.");
         }
-        data.weather[0].description = capitalizeFirstLetterOfEachWord(data.weather[0].description);
         setWeather(data);
-        setShowImages(false);
       } catch (error) {
         console.error(error);
         setError('Check the spelling of the city.');
-        setShowImages(true);
       }
       setIsLoading(false);
       setFadeState('fade-in');
     }, FADE_DURATION);
-
-    setFadeTransition(timeout);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
+
+      {/* AVATAR */}
       <a href="https://github.com/e-adzg" target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', top: 20, left: 20 }}>
           <Avatar
             alt="e-adzg"
@@ -160,17 +153,19 @@ function App() {
             sx={{ width: 56, height: 56, border: '2px solid white', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)'}}
           />
         </a>
+
+        {/* HEADER - Contains search and weather display */}
         <header className="App-header">
+
+          {/* Search box and search icon */}
           <Box
             component="form"
             onSubmit={handleFetchWeather}
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
+            sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' }, }}
             noValidate
             autoComplete="off"
           >
-            <TextField
+            <TextField 
               error={!!error}
               id="standard-error-helper-text"
               label="City Name"
@@ -180,30 +175,20 @@ function App() {
               helperText={error || "Enter the city name to get weather"}
               variant="standard"
               sx={{
-                '& label': {
-                  color: 'white',
-                },
-                '& .MuiInput-underline:before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: 'white',
-                },
-                '& .MuiInput-input': {
-                  color: 'white',
-                },
-                '& .MuiFormHelperText-root': {
-                  color: 'white',
-                },
-                '& .Mui-error': {
-                  color: '#f44336',
-                }
+                '& label': { color: 'white' },
+                '& .MuiInput-underline:before': { borderBottomColor: 'white' },
+                '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: 'white' },
+                '& .MuiInput-input': { color: 'white' },
+                '& .MuiFormHelperText-root': { color: 'white' },
+                '& .Mui-error': { color: '#f44336' }
               }}
             />
             <IconButton type="submit" aria-label="search" color="primary" onClick={handleFetchWeather}>
               {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
             </IconButton>
           </Box>
+
+          {/* WEATHER DISPLAY - Displays weather info, or else displays GIF, if loading display loading icon */}
           <div className={`weather-display ${fadeState}`} style={{ transitionDuration: `${FADE_DURATION}ms` }}>
             {!weather && !isLoading ? (
               <img src={currentImage} alt="Weather Placeholder" style={{
@@ -223,6 +208,7 @@ function App() {
           </div>
         </header>
 
+        {/* METRICS TOGGLE - Contains all metrics related */}
         <div className="Metrics-toggle">
           <FormGroup>
             <FormControlLabel
@@ -231,10 +217,12 @@ function App() {
               labelPlacement="top"
             />
           </FormGroup>
+
+          {/* Node Metrics */}
           {showMetrics && nodesMetrics.map((node) => (
             <Fade in={showMetrics} key={node.nodeName} timeout={500}>
               <div>
-                <BasicCard
+                <NodeCard
                   nodeName={node.nodeName}
                   cpuUsage={node.cpuUsage}
                   memoryUsage={node.memoryUsage}
@@ -242,13 +230,17 @@ function App() {
               </div>
             </Fade>
           ))}
+
+          {/* Pod Metrics */}
           {showMetrics && podsMetrics.length > 0 && (
             <Fade in={showMetrics} timeout={500}>
               <div>
-                <CustomTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
+                <PodMetricTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
               </div>
             </Fade>
           )}
+
+          {/* Send Requests Slider and Button */}
           {showMetrics && (
             <Fade in={showMetrics} timeout={500}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: '100px' }}>

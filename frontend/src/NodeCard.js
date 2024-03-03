@@ -1,10 +1,10 @@
-// BasicCard.js
+// NodeCard.js
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 
-export default function BasicCard({ nodeName, cpuUsage, memoryUsage }) {
+export default function NodeCard({ nodeName, cpuUsage, memoryUsage }) {
   return (
     <Card elevation={8} sx={{ minWidth: 275, maxWidth: 500, margin: 2, backgroundColor: "#f5f5f5", borderRadius: "20px" }}>
       <CardContent>

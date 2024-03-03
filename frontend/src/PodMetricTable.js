@@ -1,4 +1,4 @@
-// CustomTable.js
+// PodMetricTable.js
 import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-function CustomTable({ podsMetrics, requestCountMetrics }) {
+function PodMetricTable({ podsMetrics, requestCountMetrics }) {
   return (
     <TableContainer elevation={8} component={Paper} sx={{ borderRadius: '20px' }}>
       <Table sx={{ minWidth: 650 }} aria-label="customized table">
@@ -41,4 +41,4 @@ function CustomTable({ podsMetrics, requestCountMetrics }) {
   );
 }
 
-export default CustomTable;
+export default PodMetricTable;

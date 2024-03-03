@@ -3,9 +3,19 @@ import axios from 'axios';
 
 const baseUrl = 'http://172.18.0.2:31000';
 
+
+// Utility method to capitalize first letter of each word
+const capitalizeFirstLetterOfEachWord = (str) => {
+  return str.replace(/\b(\w)/g, s => s.toUpperCase());
+};
+
+// Fetch weather data
 export const fetchWeather = async (city) => {
   try {
     const response = await axios.get(`${baseUrl}/weather?city=${encodeURIComponent(city)}`);
+    if (response.data.weather && response.data.weather.length > 0) {
+      response.data.weather[0].description = capitalizeFirstLetterOfEachWord(response.data.weather[0].description);
+    }
     return response.data;
   } catch (error) {
     console.error('Error fetching weather data:', error);
@@ -13,6 +23,7 @@ export const fetchWeather = async (city) => {
   }
 };
 
+// Fetch node metrics
 export const fetchNodesMetrics = async () => {
   try {
     const response = await axios.get(`${baseUrl}/metrics/nodes`);
@@ -28,6 +39,7 @@ export const fetchNodesMetrics = async () => {
   }
 };
 
+// Fetch pod metrics
 export const fetchPodsMetrics = async () => {
   try {
     const response = await axios.get(`${baseUrl}/metrics/pods`);
@@ -38,6 +50,7 @@ export const fetchPodsMetrics = async () => {
   }
 };
 
+// Fetch request count metrics
 export const fetchRequestCountMetrics = async () => {
   try {
     const response = await axios.get(`${baseUrl}/metrics/request-count`);
