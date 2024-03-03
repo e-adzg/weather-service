@@ -1,5 +1,6 @@
 package ie.mu.fyp.weatherservice.service;
 
+import ie.mu.fyp.weatherservice.dto.HPADto;
 import ie.mu.fyp.weatherservice.dto.NodeMetricsDto;
 import ie.mu.fyp.weatherservice.dto.PodMetricsDto;
 
@@ -10,6 +11,10 @@ import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.custom.NodeMetrics;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodList;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.AutoscalingV1Api;
+import io.kubernetes.client.openapi.models.V1HorizontalPodAutoscaler;
+import io.kubernetes.client.openapi.models.V1HorizontalPodAutoscalerList;
 import io.kubernetes.client.util.Config;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -115,7 +121,6 @@ public class MetricsService {
     }
 
     public Map<String, Integer> getAllPodRequestCounts() {
-        // Initialize map to hold the counts for each pod
         Map<String, Integer> counts = new HashMap<>();
 
         // Obtain connection to Redis
@@ -141,5 +146,25 @@ public class MetricsService {
             logger.error("Failed to retrieve request counts", e);
         }
         return counts;
+    }
+
+    public List<HPADto> getHPADetails() {
+        List<HPADto> hpaDetails = new ArrayList<>();
+        AutoscalingV1Api autoscalingV1Api = new AutoscalingV1Api(client);
+        try {
+            // Fetch list of all HPAs in all namespaces
+            V1HorizontalPodAutoscalerList hpaList = autoscalingV1Api.listHorizontalPodAutoscalerForAllNamespaces().execute();
+
+            for (V1HorizontalPodAutoscaler hpa : hpaList.getItems()) {
+                String name = hpa.getMetadata().getName();
+                Integer currentReplicas = hpa.getStatus().getCurrentReplicas();
+                Integer desiredReplicas = hpa.getStatus().getDesiredReplicas();
+
+                hpaDetails.add(new HPADto(name, currentReplicas, desiredReplicas));
+            }
+        } catch (ApiException e) {
+            logger.error("Failed to fetch HPA details", e);
+        }
+        return hpaDetails;
     }
 }
