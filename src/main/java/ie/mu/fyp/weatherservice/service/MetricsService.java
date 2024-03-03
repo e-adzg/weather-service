@@ -66,7 +66,7 @@ public class MetricsService {
                 return new NodeMetricsDto(nodeName, cpuUsage, memoryUsage);
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            NodeMetricsDto errorInfo = new NodeMetricsDto("Metrics Server is starting soon or an error has occurred", 0.0, 0.0);
+            NodeMetricsDto errorInfo = new NodeMetricsDto("Metrics Server is starting...", 0.0, 0.0);
             return Collections.singletonList(errorInfo);
         }
     }

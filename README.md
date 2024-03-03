@@ -1,6 +1,8 @@
 # Weather Service
 A Java Spring Boot microservice for providing weather forecasts.
 
+![Weather Service Logo](frontend/public/logo192.png)
+
 ## Running the Application
 
 ### Running the Image with Kind

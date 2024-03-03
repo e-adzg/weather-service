@@ -1,5 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700&display=swap');
+
 .App {
   text-align: center;
+  background: radial-gradient(circle, #363636, #0c0c0c);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  font-family: 'M PLUS 1p', sans-serif;
+}
+
+.bold-text {
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .App-logo {
@@ -14,7 +26,6 @@
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -24,8 +35,29 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.fade-in, .fade-out {
+  transition: opacity 1s ease-in-out;
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.weather-display {
+  min-height: 750px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Metrics-toggle {
+  padding: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @keyframes App-logo-spin {
