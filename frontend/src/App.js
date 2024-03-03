@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     let intervalId;
-    
+
     if (!weather && !isLoading) {
       setShowImages(true);
       intervalId = setInterval(() => {
@@ -45,7 +45,7 @@ function App() {
     } else {
       setShowImages(false);
     }
-  
+
     return () => clearInterval(intervalId);
   }, [weather, isLoading]);
 
@@ -54,65 +54,66 @@ function App() {
       if (showMetrics) {
         const nodesData = await fetchNodesMetrics();
         setNodesMetrics(nodesData);
-  
+
         const podsData = await fetchPodsMetrics();
         setPodsMetrics(podsData);
-  
+
         const requestCountData = await fetchRequestCountMetrics();
         setRequestCountMetrics(requestCountData);
       }
     };
-  
+
     fetchMetrics();
-  
+
     let intervalId;
     if (showMetrics) {
       intervalId = setInterval(fetchMetrics, 5000);
     }
-  
+
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
       }
     };
   }, [showMetrics]);
-  
+
   const FADE_DURATION = 1000;
 
-  const handleFetchWeather = async () => {
-      setIsLoading(true);
-      setFadeState('fade-out');
-  
-      const timeout = setTimeout(async () => {
-          setWeather(null);
-          setError(null);
-  
-          if (!city.trim()) {
-              setError("City name cannot be empty.");
-              setIsLoading(false);
-              setShowImages(true);
-              setFadeState('fade-in');
-              return;
-          }
-  
-          try {
-              const data = await fetchWeather(city);
-              if (data.cod !== 200) {
-                  throw new Error(data.message || "Error fetching weather data.");
-              }
-              data.weather[0].description = capitalizeFirstLetterOfEachWord(data.weather[0].description);
-              setWeather(data);
-              setShowImages(false);
-          } catch (error) {
-              console.error(error);
-              setError('Check the spelling of the city.');
-              setShowImages(true);
-          }
-          setIsLoading(false);
-          setFadeState('fade-in');
-      }, FADE_DURATION);
-    
-      setFadeTransition(timeout);
+  const handleFetchWeather = async (e) => {
+    e.preventDefault()
+    setIsLoading(true);
+    setFadeState('fade-out');
+
+    const timeout = setTimeout(async () => {
+      setWeather(null);
+      setError(null);
+
+      if (!city.trim()) {
+        setError("City name cannot be empty.");
+        setIsLoading(false);
+        setShowImages(true);
+        setFadeState('fade-in');
+        return;
+      }
+
+      try {
+        const data = await fetchWeather(city);
+        if (data.cod !== 200) {
+          throw new Error(data.message || "Error fetching weather data.");
+        }
+        data.weather[0].description = capitalizeFirstLetterOfEachWord(data.weather[0].description);
+        setWeather(data);
+        setShowImages(false);
+      } catch (error) {
+        console.error(error);
+        setError('Check the spelling of the city.');
+        setShowImages(true);
+      }
+      setIsLoading(false);
+      setFadeState('fade-in');
+    }, FADE_DURATION);
+
+    setFadeTransition(timeout);
   };
 
   return (
@@ -120,6 +121,7 @@ function App() {
       <header className="App-header">
         <Box
           component="form"
+          onSubmit={handleFetchWeather}
           sx={{
             '& .MuiTextField-root': { m: 1, width: '25ch' },
           }}
@@ -156,7 +158,7 @@ function App() {
               }
             }}
           />
-          <IconButton aria-label="search" color="primary" onClick={handleFetchWeather}>
+          <IconButton type="submit" aria-label="search" color="primary" onClick={handleFetchWeather}>
             {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
           </IconButton>
         </Box>
