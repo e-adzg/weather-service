@@ -19,19 +19,10 @@ import WeatherTable from './WeatherTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import avatarImage from './assets/image3.jpg';
-
-const capitalizeFirstLetterOfEachWord = (str) => {
-  return str.replace(/\b(\w)/g, s => s.toUpperCase());
-}
-
-const theme = createTheme({
-  typography: {
-    fontFamily: "'M PLUS 1p', sans-serif",
-    body1: {
-      fontWeight: 700,
-    },
-  },
-});
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
 
 function App() {
   const [city, setCity] = useState('');
@@ -46,6 +37,36 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(image1);
   const [showImages, setShowImages] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
+  const [sliderValue, setSliderValue] = useState(0);
+
+  const handleSendRequests = async () => {
+    for (let i = 0; i < sliderValue; i++) {
+      try {
+        const response = await fetchWeather('Lucan');
+        console.log(response);
+      } catch (error) {
+        console.error(`Error sending request ${i + 1}:`, error);
+      }
+    }
+  };
+
+  const capitalizeFirstLetterOfEachWord = (str) => {
+    return str.replace(/\b(\w)/g, s => s.toUpperCase());
+  }
+  
+  const theme = createTheme({
+    typography: {
+      fontFamily: "'M PLUS 1p', sans-serif",
+      body1: {
+        fontWeight: 700,
+      },
+    },
+  });
+  
+  const handleSliderChange = (event, newValue) => {
+    setSliderValue(newValue);
+  };
 
   useEffect(() => {
     let intervalId;
@@ -226,6 +247,32 @@ function App() {
               <div>
                 <CustomTable podsMetrics={podsMetrics} requestCountMetrics={requestCountMetrics} />
               </div>
+            </Fade>
+          )}
+          {showMetrics && (
+            <Fade in={showMetrics} timeout={500}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: '100px' }}>
+                  <Slider
+                    sx={{ width: 200 }}
+                    step={10}
+                    marks={[
+                      { value: 0, label: <Typography sx={{ color: 'white' }}>0</Typography> },
+                      { value: 100, label: <Typography sx={{ color: 'white' }}>100</Typography> },
+                    ]}
+                    value={sliderValue}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={100}
+                    onChange={handleSliderChange}
+                  />
+                  <Button
+                    variant="contained"
+                    endIcon={<SendIcon />}
+                    onClick={() => handleSendRequests(sliderValue)}
+                  >
+                    SEND REQUESTS
+                  </Button>
+                </Box>
             </Fade>
           )}
         </div>
