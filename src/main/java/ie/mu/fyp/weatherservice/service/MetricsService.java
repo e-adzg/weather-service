@@ -124,7 +124,7 @@ public class MetricsService {
         Map<String, Integer> counts = new HashMap<>();
 
         // Obtain connection to Redis
-        try (RedisConnection redisConnection = redisTemplate.getConnectionFactory().getConnection()) {
+        try (RedisConnection redisConnection = Objects.requireNonNull(redisTemplate.getConnectionFactory()).getConnection()) {
 
             // Use scan command to find all keys starting with "pod:"
             Cursor<byte[]> cursor = redisConnection.keyCommands().scan(ScanOptions.scanOptions().match("pod:*").build());

@@ -12,8 +12,12 @@ public class KubernetesClientConfig {
 
     // Creates a Kubernetes API client.
     @Bean
-    public ApiClient apiClient() throws Exception {
-        return Config.defaultClient();
+    public ApiClient apiClient() {
+        try {
+            return Config.defaultClient();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to initialize Kubernetes API client", e);
+        }
     }
 
     // Creates CoreV1Api bean to interact with Kubernetes core API.

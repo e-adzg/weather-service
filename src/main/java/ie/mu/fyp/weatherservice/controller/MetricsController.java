@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 @RequestMapping("/metrics")
 public class MetricsController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetricsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetricsController.class);
     private final MetricsService metricsService;
 
     @Autowired
@@ -60,7 +60,7 @@ public class MetricsController {
 
     // Endpoint to get request count per pod.
     @GetMapping("/request-count")
-    public ResponseEntity<?> getRequestCount() {
+    public ResponseEntity<Map<String, Integer>> getRequestCount() {
         // Calls service to get pod requests.
         Map<String, Integer> counts = metricsService.getAllPodRequestCounts();
         return ResponseEntity.ok(counts);
